@@ -1,0 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+
+
+mainClassName = 'y3practice2river.Main'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testImplementation     'junit:junit:4.13'
+}
