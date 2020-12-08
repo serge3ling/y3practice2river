@@ -7,6 +7,7 @@ public class Main {
      */
     public static void main(String[] args) {
         System.out.println("y3practice2river");
+        RiverFrame.main(args);
     }
     
 }

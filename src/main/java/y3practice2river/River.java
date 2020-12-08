@@ -16,8 +16,9 @@ public class River {
     int discharge;
     String continent;
     int basin;
-    public int periodDischarge(String start,String end){
-    return 0;
+    
+    public int periodDischarge(String start, String end){
+        return 0;
     };
  
     
