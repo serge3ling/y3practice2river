@@ -5,6 +5,12 @@
  */
 package y3practice2river;
 
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JButton;
+
 /**
  *
  * @author sergio
@@ -16,6 +22,56 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        afterInit();
+    }
+    
+    private void afterInit() {
+        Object[] columnNames = { "Назва", "Континент", "Довжина", "Стік" };
+        model = new DefaultTableModel() {
+            Class[] types = new Class [] {
+                java.lang.String.class,
+                java.lang.String.class,
+                java.lang.Integer.class,
+                java.lang.Integer.class,
+                javax.swing.JButton.class
+            };
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return types[columnIndex];
+            }
+        };
+        model.setColumnIdentifiers(columnNames);
+        riverTable.setModel(model);
+        
+        riverTable.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                System.out.println("selected row is " + riverTable.getSelectedRow());
+            }
+            @Override
+            public void mouseEntered(MouseEvent event) {
+            }
+            @Override
+            public void mouseExited(MouseEvent event) {
+            }
+            @Override
+            public void mouseReleased(MouseEvent event) {
+            }
+            @Override
+            public void mousePressed(MouseEvent event) {
+            }
+        });
+        
+        riverTableFakeData();
+    }
+    
+    private void riverTableFakeData() {
+        Object[] row1 = { "Дніпро", "Євразія", "1000", "40" };
+        Object[] row2 = { "Дністер", "Євразія", "700", "20" };
+        
+        model.addRow(row1);
+        model.addRow(row2);
     }
 
     /**
@@ -101,4 +157,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable riverTable;
     // End of variables declaration//GEN-END:variables
+    
+    private DefaultTableModel model;
 }
