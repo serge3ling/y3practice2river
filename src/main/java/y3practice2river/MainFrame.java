@@ -8,8 +8,10 @@ package y3practice2river;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.table.DefaultTableModel;
+
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -22,32 +24,25 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        riverFrame = new RiverFrame(this);
         afterInit();
     }
     
     private void afterInit() {
-        Object[] columnNames = { "Назва", "Континент", "Довжина", "Стік" };
-        model = new DefaultTableModel() {
-            Class[] types = new Class [] {
-                java.lang.String.class,
-                java.lang.String.class,
-                java.lang.Integer.class,
-                java.lang.Integer.class,
-                javax.swing.JButton.class
-            };
-
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return types[columnIndex];
-            }
-        };
+        Object[] columnNames = { "id", "Назва", "Континент", "Довжина", "Стік" };
+        model = new DefaultTableModel();
         model.setColumnIdentifiers(columnNames);
         riverTable.setModel(model);
         
         riverTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent event) {
-                System.out.println("selected row is " + riverTable.getSelectedRow());
+                int rowNum = riverTable.getSelectedRow();
+                int id = Integer.parseInt(
+                        model.getValueAt(rowNum, 0).toString());
+                River currentRiver = rivers[id];
+                riverFrame.setRiver(currentRiver);
+                riverFrame.setVisible(true);
             }
             @Override
             public void mouseEntered(MouseEvent event) {
@@ -67,11 +62,32 @@ public class MainFrame extends javax.swing.JFrame {
     }
     
     private void riverTableFakeData() {
-        Object[] row1 = { "Дніпро", "Євразія", "1000", "40" };
-        Object[] row2 = { "Дністер", "Євразія", "700", "20" };
+        rivers = new River[2];
         
-        model.addRow(row1);
-        model.addRow(row2);
+        rivers[0] = new River(0, 2201, 30, "Дніпро", 1670, "Євразія", 504300, "/dnieper.jpg");
+        rivers[1] = new River(1, 1362, 10, "Дністер", 300, "Євразія", 72100, "/dniester.jpg");
+        
+        for (int i = 0; i < rivers.length; i++) {
+            Object[] row = makeRow(rivers[i], i);
+            model.addRow(row);
+        }
+    }
+    
+    public void updateRiver(River river) {
+        int rowNum = river.id;
+        rivers[rowNum] = river;
+        int cols = model.getColumnCount();
+        model.setValueAt(rivers[rowNum].id, rowNum, 0);
+        model.setValueAt(rivers[rowNum].name, rowNum, 1);
+        model.setValueAt(rivers[rowNum].continent, rowNum, 2);
+        model.setValueAt(rivers[rowNum].length, rowNum, 3);
+        model.setValueAt(rivers[rowNum].discharge, rowNum, 4);
+    }
+    
+    private Object[] makeRow(River river, int i) {
+        Object[] row = { rivers[i].id, rivers[i].name, rivers[i].continent,
+                rivers[i].length, rivers[i].depth };
+        return row;
     }
 
     /**
@@ -85,8 +101,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         riverTable = new javax.swing.JTable();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        exitMenuItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Ріки");
 
         riverTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -97,6 +119,32 @@ public class MainFrame extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(riverTable);
+
+        fileMenu.setText("Файл");
+
+        exitMenuItem.setText("Вихід");
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(exitMenuItem);
+
+        jMenuBar1.add(fileMenu);
+
+        helpMenu.setText("Допомога");
+
+        aboutMenuItem.setText("Про...");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenuItem);
+
+        jMenuBar1.add(helpMenu);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -112,11 +160,23 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+        try {
+            java.awt.Desktop.getDesktop().open(new java.io.File("./help.html"));
+        } catch (java.io.IOException e) {
+            System.err.println("help.html not found.");
+        }
+    }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_exitMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -154,9 +214,16 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable riverTable;
     // End of variables declaration//GEN-END:variables
     
     private DefaultTableModel model;
+    private final RiverFrame riverFrame;
+    private River[] rivers;
 }
